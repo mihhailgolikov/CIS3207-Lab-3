@@ -5,22 +5,15 @@ int main(int argc, char *argv) {
 
 }
 
-
-int processWrd(char* word) { //compare the spelling of the word within the dictionary
-    // check the dictionary file through every word if there is a match for the given word
-    for (int i = 0; i < dictionarySize; i++) {
-        if (strcmp(word, dictionary[i]) == 0)
-            return 1;
-    }
-    return 0;
-}
-
-
-int isWrdANum(char* num) { // check if the word is a number (no dictionary needed)
-    for (int i = 0, len = strlen(num); i < len; i++)
-    {
-        if (!isdigit(num[i])) // if its a digit, return 0
-            return 0;
-    }
-    return 1; // otherwise return yes
+int wordSearch(char dictionary[][MAX_WORD_SIZE], char* wordToFind) {
+	int i = 0; // i is the index to keep track of words within the dictionary as we go through it,
+  
+	// while i <  wordsInDictionary - 1 (because start i = 0)
+	while(i < dictionaryWordCount - 1) { // iteration through the dictionary
+		if (strcmp(dictionary[i], wordToFind) == 0) { // if word found
+			return 1; // return word found
+		}
+		i++; // i++ to check next word
+	} 
+	return 0; // return word not found
 }
