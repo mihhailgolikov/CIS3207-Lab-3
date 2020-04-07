@@ -1,7 +1,24 @@
 #include "server.h"
+char ERR_JOB_MUTEX_INIT[] = "***ERROR: Cannot start job mutex.***";
+char ERR_LOG_MUTEX_INIT[] = "***ERROR: Cannot start log mutex. ***";
+char SHELL_GREET[] = "***ERROR: ***";
+char SHELL_GREET[] = "***ERROR: ***";
+char SHELL_GREET[] = "***ERROR: ***";
+char SHELL_GREET[] = "***ERROR: ***";
+char SHELL_GREET[] = "***ERROR: ***";
+char SHELL_GREET[] = "***ERROR: ***";
+char SHELL_GREET[] = "***ERROR: ***";
 
 int main(int argc, char *argv) {
     //char* word = "sdfsdf";
+	if(pthread_mutex_init(&job_mutex, NULL) != 0) { 
+		write(1,ERR_JOB_MUTEX_INIT,strlen(ERR_JOB_MUTEX_INIT)); // check that the job mutex was initialized
+		return -1;
+	}
+	if(pthread_mutex_init(&log_mutex, NULL) != 0) {
+		write(1,ERR_LOG_MUTEX_INIT,strlen(ERR_LOG_MUTEX_INIT)); // check that the log mutex was initialized
+		return -1;
+	}
 
 }
 
