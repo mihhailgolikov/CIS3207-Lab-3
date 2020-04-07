@@ -38,6 +38,109 @@ int main(int argc, char** argv) {
 		return -1;
 	}
 
+	// make new work and log threads
+
+	// work thread
+	for (int i = 0; i < NUM_WORKER_THREADS; i++) {
+		if(pthread_create(&threadPool[i], NULL, workerThreadFunc, NULL) == 0) { // pthread_create() = 0 = worker thread successfully created
+			
+			write(1,WORK_THREAD_INIT_SUCCESS,strlen(WORK_THREAD_INIT_SUCCESS)); 
+			
+		}
+	}
+  // log thread
+	if (pthread_create(&logThread, NULL, logThreadFunc, NULL) == 0) { // pthread_create() = 0 = log thread successfully created
+		
+		write(1,LOG_THREAD_INIT_SUCCESS,strlen(LOG_THREAD_INIT_SUCCESS)); 
+		
+	}
+
+	// if no port or dictionary name specified, use defaults
+	if (argc == 1){
+		// write(1,ERR_NO_PORT,strlen(ERR_NO_PORT)); 
+		// use DEFAULT_PORT, DEFAULT_DICTIONARY
+		portConnectionNumber = DEFAULT_PORT;
+		dictionaryTextFileName = DEFAULT_DICTIONARY;
+		
+		printf("The dictionary txt file used: %s\n", dictionaryTextFileName); 
+		
+	} else if (argc == 2) { // check if the second argument is a port number or a file name,
+		// if port number, the dictionary remains default
+		if (strstr(argv[1], ".txt") == NULL){ // second arg is a text file so we have a custom dictionary
+			portConnectionNumber = atoi(argv[1]); 
+			dictionaryTextFileName = DEFAULT_DICTIONARY;
+			
+			write(1,DICTIONARY_INIT_SUCCESS,strlen(DICTIONARY_INIT_SUCCESS)); 
+
+		} 
+		// if it is a dictionary file name, we set it as the dictionary and leave the default port
+		if (strstr(argv[1], ".txt") != NULL) { // is a text file, so dictionary specified
+			portConnectionNumber = DEFAULT_PORT;
+			dictionaryTextFileName = argv[1];
+			
+			printf("Assigned custom port number successfully!\n"); // FOR TESTING
+			
+		}
+		printf("You entered 2 arguments! Where port number is %d and dictionary is %s\n", portConnectionNumber, dictionaryTextFileName);
+	} else if (argc == 3) {
+		if ((strstr(argv[1], ".txt") == NULL) && (strstr(argv[2], ".txt") != NULL)) {
+			// 2nd arg is a dictionary, 3rd arg is custom port
+			portConnectionNumber = atoi(argv[1]);
+			dictionaryTextFileName = argv[2]; 
+	
+		} else if ((strstr(argv[1], ".txt") != NULL) && (strstr(argv[2], ".txt") == NULL)) {
+			// 2nd arg is custom port, 3rd arg is dictionary
+			dictionaryTextFileName = argv[1]; // set  accordingly
+			portConnectionNumber = atoi(argv[2]);
+		} else {
+			write(1,ERR_INVALID_ARGS,strlen(ERR_INVALID_ARGS)); 
+			return -1;
+		}
+	} else { 
+		write(1,ERR_INVALID_ARGS,strlen(ERR_INVALID_ARGS)); 
+		return -1;
+	}
+
+	
+	FILE* dictionaryTextFileName_ptr = fopen(dictionaryTextFileName, "r"); // open custom dictionary file
+	if (dictionaryTextFileName_ptr == NULL) { // if not able to open
+		printf("Cannot open dictionary file!\n"); // error
+		return -1; // return -1 to exit program
+	} 
+	else { // successful read, store the words from the dictionary file into the program's dictionary array.
+		int i = 0;
+	// store each word from the dictionary file to the dictionary array, fgets gets rid of the null char at the end, so no problem
+	// we also stop reading the dictionary file when it hits the end
+		while((fgets(dictionaryWordsArray[i], sizeof(dictionaryWordsArray[i]), dictionaryTextFileName_ptr) != NULL) && (i < (DICTIONARY_SIZE - 1))) {  
+			currentWordInDictionary++;
+			i++;
+		}
+		fclose(dictionaryTextFileName_ptr); // close file pointer
+	}
+
+	// the ports below and above these numbers do not exist, so we print out an error.
+	if (portConnectionNumber < 1024 || portConnectionNumber > 65535){
+		write(1,ERR_NO_PORT,strlen(ERR_NO_PORT)); 
+		return -1;
+	}
+	// get socket descriptor to listen for incoming connection
+	socketConnection = open_listenfd(portConnectionNumber);
+	if (socketConnection == -1){ // invalid connection
+		write(1,ERR_INVALID_SOCKET,strlen(ERR_INVALID_SOCKET)); 
+		return -1; // unsucessful
+	}
+
+	// inf loop processing incoming connections
+	while(1) { 
+		
+		// the accept function waits until there is a user connection to the server, and writes the info into the sockaddr_in client struct.
+		// if we have a successful connection, we make a second socket descriptor for another new possible connection
+		// initial one is still listening and waiting for connections, new one is communicating with user for new connection established.
+		if ((socketClient = accept(socketConnection, (struct sockaddr*)&client, &lengthClient)) == -1){
+			write(1,ERR_INVALID_SOCKET,strlen(ERR_INVALID_SOCKET)); 
+			return -1;
+		}
+
 }
 
 void* logThreadFunc(void* arg) {
