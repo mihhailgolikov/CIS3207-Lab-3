@@ -12,6 +12,11 @@ The server tries to match the words to dictionary words, hereby spell-checking t
 in sync and concurrently. The server then outputs the responses to the log file, letting all of the clients
 be able to see if any and all of the sent word(s) were spelled correctly or not (OK/WRONG).
 
+  TESTING:
+  
+The testing for the server was done using 3 different terminals, all connected to the same server. Before the final submission,
+server.c had a testing #ifdef and #endif within the code, to output various testing variables (such as words, socket descriptors, clients connected, server status, etc.), which was removed for code legibility. Each single one of the words was output with the status to stdout on all 3 terminals, as well as all of the words provided in the custom dictionary file when testing. The server was tested several different times, with several different testing custom dictionaries, as well as running on different ports. Attempting to read the log file on one terminal after another terminal's client made a request to have words spell checked, proved the operations of the server concurrent, as the changes, the words and their status, were found on the second terminal, and were correct. Basic testing of a successful pthread creation, as well as inserting the socket descriptor into the job buffer, amongst several other basic tasks required by the server, were proven to be correct and functioning properly. 
+
   HOW-TO:
 
 1. Access the project directory and call "make" in order to compile the server using the Makefile.
