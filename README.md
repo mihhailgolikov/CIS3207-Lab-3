@@ -16,8 +16,11 @@ be able to see if any and all of the sent word(s) were spelled correctly or not 
 
 1. Access the project directory and call "make" in order to compile the server using the Makefile.
 2. Call the server to run it, using any of the following arguments, if needed.
+
     a. "./server" - Run using default dictionary.txt file, and using default port number.
+    
     b. "./server port" OR "./server customDictionary.txt" - Run using a custom port number or a custom dictionary file.
+    
     c. "./server port customDictionary.txt" OR "./server customDictionary.txt port" - Run using both a custom port number
         and a custom dictionary file.
 3. After running the server, sign into another terminal for the client to connect to the server using the call
