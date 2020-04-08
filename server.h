@@ -3,38 +3,34 @@
 
 #include <stdlib.h>
 #include <stdio.h>
-#include <pthread.h> // for working with threads, mutexes, and condition variables
-#include <string.h> // used for comparing args at start ie. checking for port number vs. dictionary file
+#include <pthread.h> // mutexes, threads, condition variables, etc. for server functionality.
+#include <string.h> // spell checking functionality
 #include <sys/types.h>
-#include <sys/socket.h>
-#include <netinet/in.h> // need for sockaddr_in struct to use with accept()
+#include <sys/socket.h> // socket descriptors, etc.
+#include <netinet/in.h> // sockaddr_in struct, accept(), etc.
 #include <unistd.h>
 
 // Defined constants
-#define DEFAULT_PORT 7000 // to be used if no port specified by  user
-#define DEFAULT_DICTIONARY "dictionary.txt" // to be used if user does not specify a dictionary to use
-#define NUM_WORKER_THREADS 3 // number of worker threads to be created at start
+#define DEFAULT_PORT 7000 // the default port if one is not specified
+#define DEFAULT_DICTIONARY "dictionary.txt" // default dictionary name (provided by project description) if not specified
+#define NUM_WORKER_THREADS 3 // the amount of worker threads that are concurrently running at server's initialization time
 #define DICTIONARY_SIZE 200425 // size of dictionary file to be read in
-#define JOB_BUF_LEN 100 // size of job buffer which holds socket descriptors
-#define LOG_BUF_LEN 100 // size of log buffer
-#define MAX_WORD_SIZE 15 // max word size possible in dictionary
-#define PHRASE_SIZE 25 // max phrase size - to be able to concatenate and include 'OK' or 'WRONG' on end of word
+#define JOB_BUF_LEN 100 // the amount of jobs to be held (size of) job buffer socket descriptors
+#define LOG_BUF_LEN 100 // ........................................ log buffer socket descriptors
+#define MAX_WORD_SIZE 15 // the maximum size of the word that is able to be processed (in the dictionary)
+#define PHRASE_SIZE 25 // the maximum phrase size, after the OK or WRONG status is included within the phrase
+////////////////////////// ex. "phrays WRONG" or "phrase OK"
 
-
-/********* Function Declartion ***********/
-
-/* This section was taken from the slides provided and nearly word from 
-    word from the book. Essentially, it creates the listener file descriptor, 
-    opens the socket descriptor, sets the socketopt. */
+// taken directly from the slides and the book, creating a listener fd, opens a socket descriptor, and sets the socketopt.
 int open_listenfd(int);
 
-/* both the worker thread function that prompts the user for their input,
-  and checks the word against the dictionary. The log thread which is used
-  to log all the activity from the clients requests to the server */
+// the worker and log thread functions, to conduct the operations of the server
+// including spell checking the word and writing the word and status to the log file
+// concurrently operating with the other connected clients' requests to the server
 void *workerThreadFunc(void *);
 void *logThreadFunc(void *);
 
-//search words from Dictionary.txt
+// finding the word in the given dictionary file
 int wordSearch(char dictionary[][MAX_WORD_SIZE], char* wordToFind);
 
 #endif
