@@ -35,6 +35,6 @@ void *workerThreadFunc(void *);
 void *logThreadFunc(void *);
 
 //search words from Dictionary.txt
-int searchForWordInDict(char list_of_words[][MAX_WORD_SIZE], char* wordToFind);
+int wordSearch(char dictionary[][MAX_WORD_SIZE], char* wordToFind);
 
 #endif

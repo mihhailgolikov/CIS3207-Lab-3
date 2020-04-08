@@ -254,7 +254,7 @@ void* workerThreadFunc(void* arg) {
 				break;
 			}
 			//// SEARCH FUNCTIONALITY !!! ////////////////////////////////////////////////////
-			if (wordSearch(dictionary, word)) { // call our word search (word found)
+			if (wordSearch(dictionaryWordsArray, word)) { // call our word search (word found)
 				strtok(word, "\n"); // every word will automatically have a newline char at the end, so remove it
 				word = realloc(word, sizeof(char*)*PHRASE_SIZE);
 				 // reallocate the memory to be able to fit the "OK" status at the end of the word and store it within the log
@@ -347,7 +347,7 @@ int wordSearch(char dictionary[][MAX_WORD_SIZE], char* wordToFind) {
 	int i = 0; // i is the index to keep track of words within the dictionary as we go through it,
   
 	// while i <  currentWordInDictionary - 1 (because start i = 0)
-	while(i < dictionaryWordCount - 1) { // iteration through the dictionary
+	while(i < currentWordInDictionary - 1) { // iteration through the dictionary
 		if (strcmp(dictionary[i], wordToFind) == 0) { // if word found
 			return 1; // return word found
 		}
